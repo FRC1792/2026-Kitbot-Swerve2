@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Drive.SwerveSubsystem;
+import frc.robot.subsystems.Intake.Intake;
+import frc.robot.subsystems.Intake.IntakeState;
 
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -34,6 +36,7 @@ public class RobotContainer
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/falcon"));
+  private final Intake m_intake = new Intake();
 
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -135,10 +138,15 @@ public class RobotContainer
       drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     }
 
-      driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.rightBumper().onTrue(Commands.none());
-
+    driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+    
+    driverXbox.leftBumper()
+              .onTrue(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.INTAKE)))
+              .onFalse(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OFF)));
+    
+    driverXbox.leftTrigger()
+              .onTrue(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OUTTAKE)))
+              .onFalse(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OFF)));
   }
 
   /**
