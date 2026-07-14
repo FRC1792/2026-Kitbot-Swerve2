@@ -1,15 +1,4 @@
 {
-  "conversionFactors": {
-    "angle": {
-      "gearRatio": 1.4285714286,
-      "factor": 0
-    },
-    "drive": {
-      "gearRatio": 8.14,
-      "diameter": 4,
-      "factor": 0
-    }
-  },
   "drive": {
     "type": "talonfx",
     "id": 12,
@@ -17,7 +6,7 @@
   },
   "angle": {
     "type": "talonfx",
-    "id": 13,
+    "id": 18,
     "canbus": null
   },
   "encoder": {
@@ -29,7 +18,7 @@
     "drive": false,
     "angle": false
   },
-  "absoluteEncoderOffset": 173.936,
+  "absoluteEncoderOffset": 177.012,
   "location": {
     "front": -7,
     "left": 7
