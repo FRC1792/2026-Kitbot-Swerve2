@@ -103,7 +103,7 @@ public class RobotContainer
   public RobotContainer()
   {
     // Configure the trigger bindings
-    configureTestBindings();
+    configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
 
     configureAutoChooser();
@@ -143,21 +143,25 @@ public class RobotContainer
 
     joystick.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
     
-    joystick.leftBumper()
-              .onTrue(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.INTAKE)))
-              .onFalse(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OFF)));
-    
-    joystick.leftTrigger()
+    joystick.leftBumper() //Outake (no indexer)
               .onTrue(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OUTTAKE)))
               .onFalse(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OFF)));
+    
+    joystick.leftTrigger() //Intake fuel (into hopper)
+              .onTrue(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.INTO_HOPPER))
+                      .andThen(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.INTAKE))))
+              .onFalse(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OFF))
+                      .andThen(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OFF))));
 
-    joystick.rightBumper()
-              .onTrue(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.INDEX)))
-              .onFalse(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OFF)));
+    // joystick.rightBumper()
+    //           .onTrue(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.TO_SHOOTER)))
+    //           .onFalse(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OFF)));
 
-    joystick.rightTrigger()
-              .onTrue(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OUTDEX)))
-              .onFalse(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OFF)));
+    joystick.rightTrigger() //Shoot
+              .onTrue(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.INTAKE))
+                      .andThen(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.TO_SHOOTER))))
+              .onFalse(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OFF))
+                      .andThen(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OFF))));
   }
 
   private void configureTestBindings()
