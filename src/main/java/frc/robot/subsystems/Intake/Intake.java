@@ -27,10 +27,13 @@ public class Intake extends SubsystemBase {
       intakeMotor.stopMotor();
       break;
       case INTAKE:
-        intakeMotor.set(IntakeConstants.kSpeed);
+        intakeMotor.set(-IntakeConstants.kSpeed);
         break;
       case OUTTAKE:
-        intakeMotor.set(-IntakeConstants.kSpeed);
+        intakeMotor.set(IntakeConstants.kSpeed);
+        break;
+      case SHOOT:
+        intakeMotor.set(-IntakeConstants.kShooterSpeed);
         break;
     }
   }

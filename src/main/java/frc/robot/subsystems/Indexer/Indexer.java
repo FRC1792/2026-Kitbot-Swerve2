@@ -27,10 +27,10 @@ public class Indexer extends SubsystemBase {
       indexerMotor.stopMotor();
       break;
       case TO_SHOOTER:
-        indexerMotor.set(-IndexerConstants.kSpeed);
+        indexerMotor.set(IndexerConstants.kShootSpeed);
         break;
       case INTO_HOPPER:
-        indexerMotor.set(IndexerConstants.kSpeed);
+        indexerMotor.set(-IndexerConstants.kIntakeSpeed);
         break;
     }
   }

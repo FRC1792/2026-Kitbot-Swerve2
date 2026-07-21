@@ -44,6 +44,8 @@ public class RobotContainer
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
+  private final SendableChooser<Double> speedChooser = new SendableChooser<>();
+
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
    */
@@ -107,6 +109,7 @@ public class RobotContainer
     DriverStation.silenceJoystickConnectionWarning(true);
 
     configureAutoChooser();
+    configureSpeedChooser();
   }
 
   private void configureAutoChooser() {
@@ -119,6 +122,12 @@ public class RobotContainer
     if (autoChooser.getSelected() == null ) {
       RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
     }
+  }
+
+  private void configureSpeedChooser() {
+    speedChooser.setDefaultOption("50%", 0.5);
+
+    SmartDashboard.putData("Speed Chooser", speedChooser);
   }
 
   /**
@@ -158,7 +167,8 @@ public class RobotContainer
     //           .onFalse(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OFF)));
 
     joystick.rightTrigger() //Shoot
-              .onTrue(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.INTAKE))
+              .onTrue(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.SHOOT))
+                      .andThen(Commands.waitSeconds(0.5))
                       .andThen(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.TO_SHOOTER))))
               .onFalse(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OFF))
                       .andThen(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OFF))));
@@ -178,6 +188,10 @@ public class RobotContainer
     }
 
     joystick.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+  }
+  
+  public void scaleTranslation() {
+    driveAngularVelocity.scaleTranslation(speedChooser.getSelected());
   }
 
   /**
