@@ -54,8 +54,8 @@ public class RobotContainer
                                                                 () -> joystick.getLeftX() * -1)
                                                             .withControllerRotationAxis(joystick::getRightX)
                                                             .deadband(OperatorConstants.DEADBAND)
-                                                            .scaleTranslation(0.8)
-                                                            .allianceRelativeControl(true);
+                                                            .scaleTranslation(0.5)
+                                                            .allianceRelativeControl(false);
 
   /**
    * Clone's the angular velocity input stream and converts it to a fieldRelative input stream.
@@ -67,7 +67,7 @@ public class RobotContainer
   /**
    * Clone's the angular velocity input stream and converts it to a robotRelative input stream.
    */
-  SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(true)
+  SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(false)
                                                              .allianceRelativeControl(false);
 
   SwerveInputStream driveAngularVelocityKeyboard = SwerveInputStream.of(drivebase.getSwerveDrive(),
@@ -127,6 +127,13 @@ public class RobotContainer
   private void configureSpeedChooser() {
     speedChooser.setDefaultOption("50%", 0.5);
 
+    speedChooser.addOption("60%", 0.6);
+    speedChooser.addOption("40%", 0.4);
+    speedChooser.addOption("30%", 0.3);
+    speedChooser.addOption("20%", 0.2);
+
+    speedChooser.onChange(driveAngularVelocity::scaleTranslation);
+
     SmartDashboard.putData("Speed Chooser", speedChooser);
   }
 
@@ -168,7 +175,7 @@ public class RobotContainer
 
     joystick.rightTrigger() //Shoot
               .onTrue(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.SHOOT))
-                      .andThen(Commands.waitSeconds(0.5))
+                      .andThen(Commands.waitSeconds(2.5))
                       .andThen(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.TO_SHOOTER))))
               .onFalse(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OFF))
                       .andThen(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OFF))));

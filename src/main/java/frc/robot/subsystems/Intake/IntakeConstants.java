@@ -8,6 +8,6 @@ package frc.robot.subsystems.Intake;
 public class IntakeConstants {
     public static final int kMotorId = 1;
 
-    public static final double kSpeed = 0.5;
-    public static final double kShooterSpeed = 0.95;
+    public static final double kSpeed = 0.6;
+    public static final double kShooterSpeed = 0.65;
 }

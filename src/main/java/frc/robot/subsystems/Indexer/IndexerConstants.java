@@ -9,5 +9,5 @@ public class IndexerConstants {
     public static final int kMotorId = 2;
 
     public static final double kIntakeSpeed = 0.35;
-    public static final double kShootSpeed = 0.25;
+    public static final double kShootSpeed = 0.7;
 }
