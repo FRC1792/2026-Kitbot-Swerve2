@@ -40,6 +40,7 @@ public class RobotContainer
                                                                                 "swerve/falcon"));
   private final Intake m_intake = new Intake();
   private final Indexer m_indexer = new Indexer();
+  private final AutoFactory m_autoFactory = new AutoFactory();
 
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -73,6 +74,8 @@ public class RobotContainer
   private void configureAutoChooser() {
     //Set the default auto (do nothing) 
     autoChooser.setDefaultOption("Do Nothing", Commands.runOnce(drivebase::zeroGyroWithAlliance).andThen(Commands.none()));
+    autoChooser.addOption("Move From Right Bump", m_autoFactory.getMoveFromRightAuto());
+    autoChooser.addOption("Move From Left Bump", m_autoFactory.getMoveFromLeftAuto());
 
     //Put the autoChooser on the SmartDashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
