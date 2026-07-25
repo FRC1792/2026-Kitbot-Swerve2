@@ -58,48 +58,6 @@ public class RobotContainer
                                                             .allianceRelativeControl(false);
 
   /**
-   * Clone's the angular velocity input stream and converts it to a fieldRelative input stream.
-   */
-  SwerveInputStream driveDirectAngle = driveAngularVelocity.copy().withControllerHeadingAxis(joystick::getRightX,
-                                                                                             joystick::getRightY)
-                                                           .headingWhile(true);
-
-  /**
-   * Clone's the angular velocity input stream and converts it to a robotRelative input stream.
-   */
-  SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(false)
-                                                             .allianceRelativeControl(false);
-
-  SwerveInputStream driveAngularVelocityKeyboard = SwerveInputStream.of(drivebase.getSwerveDrive(),
-                                                                        () -> -joystick.getLeftY(),
-                                                                        () -> -joystick.getLeftX())
-                                                                    .withControllerRotationAxis(() -> joystick.getRawAxis(
-                                                                        2))
-                                                                    .deadband(OperatorConstants.DEADBAND)
-                                                                    .scaleTranslation(0.8)
-                                                                    .allianceRelativeControl(true);
-  // Derive the heading axis with math!
-  SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.copy()
-                                                                               .withControllerHeadingAxis(() ->
-                                                                                                              Math.sin(
-                                                                                                                  joystick.getRawAxis(
-                                                                                                                      2) *
-                                                                                                                  Math.PI) *
-                                                                                                              (Math.PI *
-                                                                                                               2),
-                                                                                                          () ->
-                                                                                                              Math.cos(
-                                                                                                                  joystick.getRawAxis(
-                                                                                                                      2) *
-                                                                                                                  Math.PI) *
-                                                                                                              (Math.PI *
-                                                                                                               2))
-                                                                               .headingWhile(true)
-                                                                               .translationHeadingOffset(true)
-                                                                               .translationHeadingOffset(Rotation2d.fromDegrees(
-                                                                                   0));
-
-  /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer()
@@ -147,52 +105,27 @@ public class RobotContainer
   private void configureBindings()
   {
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
-    Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
-
-    if (RobotBase.isSimulation())
-    {
-      drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
-    } else
-    {
-      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
-    }
+    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
     joystick.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
     
-    joystick.leftBumper() //Outake (no indexer)
-              .onTrue(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OUTTAKE)))
-              .onFalse(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OFF)));
+    joystick.rightTrigger() //Outake fuel
+              .onTrue(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OUTTAKE))
+                      .andThen(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OUTDEX))))
+              .onFalse(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OFF))
+                      .andThen(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OFF))));
     
-    joystick.leftTrigger() //Intake fuel (into hopper)
+    joystick.leftTrigger() //Intake fuel
               .onTrue(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.INTO_HOPPER))
                       .andThen(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.INTAKE))))
               .onFalse(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OFF))
                       .andThen(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OFF))));
-
-    // joystick.rightBumper()
-    //           .onTrue(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.TO_SHOOTER)))
-    //           .onFalse(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OFF)));
-
-    joystick.rightTrigger() //Shoot
-              .onTrue(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.SHOOT))
-                      .andThen(Commands.waitSeconds(2.5))
-                      .andThen(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.TO_SHOOTER))))
-              .onFalse(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OFF))
-                      .andThen(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OFF))));
   }
 
   private void configureTestBindings()
   {
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
-    Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
-
-    if (RobotBase.isSimulation())
-    {
-      drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
-    } else
-    {
-      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
-    }
+    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
     joystick.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
   }

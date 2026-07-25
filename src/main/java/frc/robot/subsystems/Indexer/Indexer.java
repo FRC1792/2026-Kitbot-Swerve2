@@ -26,7 +26,7 @@ public class Indexer extends SubsystemBase {
       case OFF:
       indexerMotor.stopMotor();
       break;
-      case TO_SHOOTER:
+      case OUTDEX:
         indexerMotor.set(IndexerConstants.kShootSpeed);
         break;
       case INTO_HOPPER:
