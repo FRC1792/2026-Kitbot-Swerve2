@@ -9,5 +9,5 @@ public class IntakeConstants {
     public static final int kMotorId = 1;
 
     public static final double kSpeed = 0.6;
-    public static final double kShooterSpeed = 0.65;
+    public static final double kShooterSpeed = 0.95;
 }
