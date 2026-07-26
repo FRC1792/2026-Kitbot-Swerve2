@@ -114,6 +114,13 @@ public class RobotContainer
                       .andThen(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OUTDEX))))
               .onFalse(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OFF))
                       .andThen(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OFF))));
+
+    joystick.rightBumper() //Shoot
+              .onTrue(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.SHOOT))
+                      .andThen(Commands.waitSeconds(1.5)) //let shooter get up to speed
+                      .andThen(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.TO_SHOOTER))))
+              .onFalse(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.OFF))
+                      .andThen(m_intake.runOnce(() -> m_intake.setGoal(IntakeState.OFF))));
     
     joystick.leftTrigger() //Intake fuel
               .onTrue(m_indexer.runOnce(() -> m_indexer.setGoal(IndexerState.INTO_HOPPER))

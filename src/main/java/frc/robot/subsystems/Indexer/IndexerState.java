@@ -7,6 +7,7 @@ package frc.robot.subsystems.Indexer;
 /** Add your docs here. */
 public enum IndexerState {
     OUTDEX,
+    TO_SHOOTER,
     INTO_HOPPER,
     OFF
 }
